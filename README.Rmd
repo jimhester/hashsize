@@ -1,0 +1,65 @@
+---
+output:
+  md_document:
+    variant: markdown_github
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "inst/README-"
+)
+```
+
+```{r example}
+library(hashsize)
+
+# Load the tidyverse to populate the symbol table
+suppressPackageStartupMessages(library(tidyverse))
+
+buckets <- .Call(hashsize:::hashsize_symbols)
+lens <- lengths(buckets)
+total <- sum(lens)
+total
+summary(lens)
+hist(lens)
+
+largest_bucket <- symbols[lengths(symbols) == max(lengths(symbols))][[1]]
+
+largest_bucket <- symbols[lengths(symbols) >= 10]
+
+elapsed_time <- function(expr) system.time(expr)[[3]]
+
+time_large_bucket <- function(buckets, n, median, times = 1e8) {
+  b <- buckets[lengths(buckets) >= n]
+  b <- b[[sample.int(length(b), 1)]]
+
+  front <- as.character(b[[1]])
+  back <- as.character(b[[length(b)]])
+  med <- as.character(b[[median]])
+  list(
+    bucket_length = length(b),
+    front_name = front,
+    front = elapsed_time(.Call(hashsize:::hashsize_lookup_bench, front, times)),
+    back_name = back,
+    back = elapsed_time(.Call(hashsize:::hashsize_lookup_bench, back, times)),
+    med_name = med,
+    med = elapsed_time(.Call(hashsize:::hashsize_lookup_bench, med, times)))
+}
+
+to_df <- function(x) {
+  df <- do.call(rbind.data.frame, x)
+
+  percent <- function(x) sprintf("%.2f%%", x * 100)
+
+  df$total <- percent((df$back - df$front) / df$front)
+  df$median <- percent((df$med - df$front) / df$front)
+  df
+}
+
+knitr::kable(
+  to_df(replicate(50, time_large_bucket(buckets, 10, 5, 1e6), simplify = FALSE)))
+```

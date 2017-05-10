@@ -1,0 +1,1 @@
+useDynLib(hashsize, .registration = TRUE)
