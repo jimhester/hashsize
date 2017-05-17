@@ -20,7 +20,7 @@ library(hashsize)
 # Load the tidyverse to populate the symbol table
 suppressPackageStartupMessages(library(tidyverse))
 
-buckets <- .Call(hashsize:::hashsize_symbols)
+buckets <- .Call(hashsize:::hashsize_symbols, 4119L)
 lens <- lengths(buckets)
 total <- sum(lens)
 total
@@ -80,4 +80,26 @@ Rscript inst/script.R $((2**16)) $((10**4))
 # [1] 16093
 #    user  system elapsed
 #   4.280   0.007   4.288
+```
+
+An ideal hash would have constant time lookup (third column)
+```
+for i in {1..6};do Rscript inst/script2.R $((1 * 10**$i));done
+# 10      0.002   2e-04
+# 100     0.002   2e-05
+# 1000    0.002   2e-06
+# 10000   0.017   1.7e-06
+# 1e+05   0.263   2.63e-06
+# 1e+06   11.779  1.1779e-05
+```
+
+```shell
+for i in {1..6};do Rscript inst/script2.R $((1 * 10**$i));done
+# 10      0.001   1e-04
+# 100     0.001   1e-05
+# 1000    0.00299999999999997     2.99999999999998e-06
+# 10000   0.018   1.8e-06
+# 1e+05   0.202   2.02e-06
+# 1e+06   3.007   3.007e-06
+# 1e+07   128.71  1.2871e-05
 ```

@@ -5,24 +5,20 @@ library(hashsize)
 # Load the tidyverse to populate the symbol table
 suppressPackageStartupMessages(library(tidyverse))
 
-buckets <- .Call(hashsize:::hashsize_symbols)
+buckets <- .Call(hashsize:::hashsize_symbols, 4119L)
 lens <- lengths(buckets)
 total <- sum(lens)
 total
-#> [1] 21283
+#> [1] 17666
 summary(lens)
 #>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#>   0.000   4.000   5.000   5.167   7.000  15.000
+#>   0.000   3.000   4.000   4.289   6.000  13.000
 hist(lens)
 ```
 
 ![](inst/README-example-1.png)
 
 ``` r
-
-largest_bucket <- symbols[lengths(symbols) == max(lengths(symbols))][[1]]
-
-largest_bucket <- symbols[lengths(symbols) >= 10]
 
 elapsed_time <- function(expr) system.time(expr)[[3]]
 
@@ -57,55 +53,77 @@ knitr::kable(
   to_df(replicate(50, time_large_bucket(buckets, 10, 5, 1e6), simplify = FALSE)))
 ```
 
-|     |  bucket\_length| front\_name                             |  front| back\_name                |   back| med\_name                       |    med| total   | median  |
-|-----|---------------:|:----------------------------------------|------:|:--------------------------|------:|:--------------------------------|------:|:--------|:--------|
-| 2   |              10| qs                                      |  0.014| sys.parent                |  0.048| strip.white                     |  0.037| 242.86% | 164.29% |
-| 210 |              12| R\_total\_handles                       |  0.033| enquote                   |  0.055| .\_\_T\_\_sqlData:DBI           |  0.042| 66.67%  | 27.27%  |
-| 3   |              10| augment.glmRob                          |  0.032| memory.profile            |  0.060| .midDend                        |  0.036| 87.50%  | 12.50%  |
-| 4   |              11| hashsize\_symbol\_table                 |  0.044| file.show                 |  0.053| $.output\_handler               |  0.044| 20.45%  | -0.00%  |
-| 5   |              12| ic.infer                                |  0.019| validate\_formulas        |  0.072| mpg                             |  0.024| 278.95% | 26.32%  |
-| 6   |              10| check\_names\_before\_after.default     |  0.053| .MakeImplicitGroupMembers |  0.074| .get\_S4\_generics              |  0.039| 39.62%  | -26.42% |
-| 7   |              10| parse\_time                             |  0.024| ..33                      |  0.048| .check\_packages                |  0.042| 100.00% | 75.00%  |
-| 8   |              10| GeomLine                                |  0.021| xtfrm.POSIXlt             |  0.051| DUMMY                           |  0.026| 142.86% | 23.81%  |
-| 9   |              11| durs                                    |  0.015| deletions                 |  0.050| bgcodes                         |  0.028| 233.33% | 86.67%  |
-| 10  |              10| te                                      |  0.017| qnf                       |  0.045| C\_stri\_enc\_set               |  0.039| 164.71% | 129.41% |
-| 11  |              12| set\_sliced\_env                        |  0.031| .Group                    |  0.057| stri\_read\_raw                 |  0.038| 83.87%  | 22.58%  |
-| 12  |              12| Period                                  |  0.016| as.Date.default           |  0.069| select\_.data.frame             |  0.042| 331.25% | 162.50% |
-| 13  |              10| fortify.default                         |  0.029| ans                       |  0.044| .\_\_T\_\_remote\_remove:git2r  |  0.053| 51.72%  | 82.76%  |
-| 14  |              10| fortify.default                         |  0.028| ans                       |  0.042| .\_\_T\_\_remote\_remove:git2r  |  0.055| 50.00%  | 96.43%  |
-| 15  |              13| tidy.SpatialLinesDataFrame              |  0.044| rl\_word\_breaks          |  0.069| found\_src                      |  0.034| 56.82%  | -22.73% |
-| 16  |              10| milliseconds                            |  0.027| getElement                |  0.049| stri\_trans\_nfd                |  0.038| 81.48%  | 40.74%  |
-| 17  |              10| parser\_setMethodS3                     |  0.033| env::406                  |  0.045| sort\_                          |  0.026| 36.36%  | -21.21% |
-| 18  |              10| augment.glmRob                          |  0.030| memory.profile            |  0.057| .midDend                        |  0.035| 90.00%  | 16.67%  |
-| 19  |              13| commonmark                              |  0.022| .rowMeans                 |  0.056| tbl\_vars.tbl\_lazy             |  0.046| 154.55% | 109.09% |
-| 20  |              12| dmicroseconds                           |  0.027| package\_coverage         |  0.066| Variogram                       |  0.036| 144.44% | 33.33%  |
-| 21  |              11| freq1                                   |  0.016| comment&lt;-              |  0.056| call\_depth                     |  0.032| 250.00% | 100.00% |
-| 22  |              10| qs                                      |  0.013| sys.parent                |  0.049| strip.white                     |  0.041| 276.92% | 215.38% |
-| 23  |              12| package\_desc                           |  0.030| tolower                   |  0.055| format.PDF\_Indirect\_Reference |  0.062| 83.33%  | 106.67% |
-| 24  |              12| Period                                  |  0.016| as.Date.default           |  0.073| select\_.data.frame             |  0.043| 356.25% | 168.75% |
-| 25  |              12| bad\_vignettebuilder                    |  0.043| droplevels                |  0.058| geom\_step                      |  0.031| 34.88%  | -27.91% |
-| 26  |              11| URL                                     |  0.014| as.data.frame.complex     |  0.059| statsBy.boot                    |  0.036| 321.43% | 157.14% |
-| 27  |              10| nvars                                   |  0.016| .tryResumeInterrupt       |  0.061| 5                               |  0.023| 281.25% | 43.75%  |
-| 28  |              12| Hmisc                                   |  0.016| package.lib               |  0.060| residuals.gnls                  |  0.044| 275.00% | 175.00% |
-| 29  |              15| Geom                                    |  0.017| sort.list                 |  0.065| .GridEvalEnv                    |  0.037| 282.35% | 117.65% |
-| 30  |              11| .Last.lib                               |  0.025| standardGeneric           |  0.059| gh\_pkgs                        |  0.028| 136.00% | 12.00%  |
-| 31  |              11| reclass\_date.Date                      |  0.032| sample                    |  0.047| stri\_endswith\_fixed           |  0.046| 46.87%  | 43.75%  |
-| 32  |              12| lzw+p                                   |  0.019| update\_packages          |  0.058| scale\_x\_sqrt                  |  0.035| 205.26% | 84.21%  |
-| 33  |              10| sloti                                   |  0.016| getExtends                |  0.050| grid.xaxis                      |  0.037| 212.50% | 131.25% |
-| 34  |              11| .Last.lib                               |  0.020| standardGeneric           |  0.056| gh\_pkgs                        |  0.029| 180.00% | 45.00%  |
-| 35  |              10| parser\_setMethodS3                     |  0.034| env::406                  |  0.047| sort\_                          |  0.025| 38.24%  | -26.47% |
-| 36  |              12| Period                                  |  0.020| as.Date.default           |  0.071| select\_.data.frame             |  0.046| 255.00% | 130.00% |
-| 37  |              11| round.table                             |  0.024| saveToConn                |  0.054| calculateGridLayout             |  0.044| 125.00% | 83.33%  |
-| 38  |              10| sloti                                   |  0.015| getExtends                |  0.054| grid.xaxis                      |  0.036| 260.00% | 140.00% |
-| 39  |              11| match\_data\_from\_pos\_and\_len        |  0.048| dynGet                    |  0.052| dbDisconnect                    |  0.042| 8.33%   | -12.50% |
-| 40  |              15| Geom                                    |  0.015| sort.list                 |  0.062| .GridEvalEnv                    |  0.034| 313.33% | 126.67% |
-| 41  |              10| length.Rd                               |  0.021| \[.numeric\_version       |  0.058| notifyLocalFun                  |  0.038| 176.19% | 80.95%  |
-| 42  |              10| tidy.fitdistr                           |  0.029| env::206                  |  0.048| find\_index\_check              |  0.040| 65.52%  | 37.93%  |
-| 43  |              11| bad\_authors\_at\_R\_field\_for\_author |  0.060| bounds                    |  0.047| pdConstruct.pdCompSymm          |  0.050| -21.67% | -16.67% |
-| 44  |              12| node\_comment\_new                      |  0.030| env::150                  |  0.052| flattenListing                  |  0.038| 73.33%  | 26.67%  |
-| 45  |              10| roclet\_output.roclet\_rd               |  0.040| dist                      |  0.042| coef.corNatural                 |  0.041| 5.00%   | 2.50%   |
-| 46  |              11| set\_partition\_order                   |  0.037| .Class                    |  0.053| page\_str                       |  0.029| 43.24%  | -21.62% |
-| 47  |              10| curl\_fetch\_disk                       |  0.029| file.link                 |  0.047| lookup\_S4\_methods             |  0.040| 62.07%  | 37.93%  |
-| 48  |              10| splusTimeSeries                         |  0.028| C\_qpois                  |  0.044| print.select\_query             |  0.044| 57.14%  | 57.14%  |
-| 49  |              11| ElectoGraph                             |  0.023| .\_\_C\_\_hsearch         |  0.063| stri\_replace\_first\_charclass |  0.058| 173.91% | 152.17% |
-| 50  |              10| classi                                  |  0.016| .External                 |  0.046| fetch\_source.bioc              |  0.041| 187.50% | 156.25% |
+|     |  bucket\_length| front\_name                |  front| back\_name                       |   back| med\_name                       |    med| total   | median  |
+|-----|---------------:|:---------------------------|------:|:---------------------------------|------:|:--------------------------------|------:|:--------|:--------|
+| 2   |              11| as.hms.numeric             |  0.032| textConnectionValue              |  0.065| .\_\_T\_\_sqlParseVariables:DBI |  0.064| 103.12% | 100.00% |
+| 210 |              10| Date\#Duration             |  0.030| within.data.frame                |  0.062| repair\_names                   |  0.036| 106.67% | 20.00%  |
+| 3   |              10| R\_validate                |  0.027| .Class                           |  0.048| generator\_funs                 |  0.039| 77.78%  | 44.44%  |
+| 4   |              10| epi.bfi                    |  0.017| getDLLRegisteredRoutines.DLLInfo |  0.087| f1                              |  0.024| 411.76% | 41.18%  |
+| 5   |              10| intervals                  |  0.020| system                           |  0.043| print.check\_packages\_in\_dir  |  0.058| 115.00% | 190.00% |
+| 6   |              10| xml\_ns.xml\_document      |  0.035| blues9                           |  0.042| useHash                         |  0.028| 20.00%  | -20.00% |
+| 7   |              10| circadian.phase            |  0.029| is.stepfun                       |  0.051| grid.rect                       |  0.031| 75.86%  | 6.90%   |
+| 8   |              10| lift\_ld                   |  0.017| .DollarNames.default             |  0.056| %||%                            |  0.026| 229.41% | 52.94%  |
+| 9   |              10| TokenServiceAccount        |  0.041| R\_system\_version               |  0.058| add1                            |  0.026| 41.46%  | -36.59% |
+| 10  |              10| as\_list.xml\_nodeset      |  0.036| as.data.frame.numeric\_version   |  0.083| hook\_purl                      |  0.040| 130.56% | 11.11%  |
+| 11  |              10| xml\_ns.xml\_document      |  0.042| blues9                           |  0.044| useHash                         |  0.029| 4.76%   | -30.95% |
+| 12  |              10| xml\_ns.xml\_document      |  0.039| blues9                           |  0.042| useHash                         |  0.028| 7.69%   | -28.21% |
+| 13  |              10| log2\_trans                |  0.025| Title                            |  0.044| simpleFormals                   |  0.038| 76.00%  | 52.00%  |
+| 14  |              10| seq\_mnsl                  |  0.022| anyDuplicated.matrix             |  0.059| impMethods                      |  0.032| 168.18% | 45.45%  |
+| 15  |              11| dmicroseconds              |  0.026| setRepositories                  |  0.054| Variogram                       |  0.031| 107.69% | 19.23%  |
+| 16  |              10| Period                     |  0.018| as.Date.default                  |  0.057| select\_.data.frame             |  0.047| 216.67% | 161.11% |
+| 17  |              10| GeomLine                   |  0.023| xtfrm.POSIXlt                    |  0.051| DUMMY                           |  0.026| 121.74% | 13.04%  |
+| 18  |              10| lift\_ld                   |  0.018| .DollarNames.default             |  0.057| %||%                            |  0.025| 216.67% | 38.89%  |
+| 19  |              10| Period                     |  0.017| as.Date.default                  |  0.058| select\_.data.frame             |  0.049| 241.18% | 188.24% |
+| 20  |              10| tidy.ftable                |  0.024| qnt                              |  0.044| refMethodDef\#function          |  0.050| 83.33%  | 108.33% |
+| 21  |              10| seq\_mnsl                  |  0.023| anyDuplicated.matrix             |  0.059| impMethods                      |  0.032| 156.52% | 39.13%  |
+| 22  |              10| reclass\_date.POSIXlt      |  0.041| :::                              |  0.042| S3Part&lt;-                     |  0.029| 2.44%   | -29.27% |
+| 23  |              10| TokenServiceAccount        |  0.044| R\_system\_version               |  0.058| add1                            |  0.026| 31.82%  | -40.91% |
+| 24  |              11| write\_xml.xml\_nodeset    |  0.040| ..59                             |  0.045| stri\_extract                   |  0.037| 12.50%  | -7.50%  |
+| 25  |              11| as.hms.numeric             |  0.032| textConnectionValue              |  0.064| .\_\_T\_\_sqlParseVariables:DBI |  0.064| 100.00% | 100.00% |
+| 26  |              10| epi.bfi                    |  0.017| getDLLRegisteredRoutines.DLLInfo |  0.087| f1                              |  0.024| 411.76% | 41.18%  |
+| 27  |              10| xml\_ns.xml\_document      |  0.035| blues9                           |  0.047| useHash                         |  0.033| 34.29%  | -5.71%  |
+| 28  |              11| as.hms.numeric             |  0.031| textConnectionValue              |  0.064| .\_\_T\_\_sqlParseVariables:DBI |  0.064| 106.45% | 106.45% |
+| 29  |              10| circular                   |  0.020| Sys.setFileTime                  |  0.064| tick\_non\_syntactic            |  0.048| 220.00% | 140.00% |
+| 30  |              10| tidy.density               |  0.035| &lt;.R\_system\_version          |  0.062| as.raster.array                 |  0.047| 77.14%  | 34.29%  |
+| 31  |              10| tidy.ftable                |  0.024| qnt                              |  0.044| refMethodDef\#function          |  0.053| 83.33%  | 120.83% |
+| 32  |              10| R\_validate                |  0.025| .Class                           |  0.044| generator\_funs                 |  0.045| 76.00%  | 80.00%  |
+| 33  |              10| modulo\_period\_by\_period |  0.045| as.data.frame.integer            |  0.058| on\_failure&lt;-                |  0.036| 28.89%  | -20.00% |
+| 34  |              10| TokenServiceAccount        |  0.040| R\_system\_version               |  0.057| add1                            |  0.030| 42.50%  | -25.00% |
+| 35  |              10| circadian.phase            |  0.029| is.stepfun                       |  0.049| grid.rect                       |  0.031| 68.97%  | 6.90%   |
+| 36  |              10| intervals                  |  0.020| system                           |  0.042| print.check\_packages\_in\_dir  |  0.059| 110.00% | 195.00% |
+| 37  |              10| parse\_time                |  0.023| ..33                             |  0.040| Module\_\_functions\_names      |  0.052| 73.91%  | 126.09% |
+| 38  |              10| modulo\_period\_by\_period |  0.048| as.data.frame.integer            |  0.058| on\_failure&lt;-                |  0.036| 20.83%  | -25.00% |
+| 39  |              10| reclass\_date.POSIXlt      |  0.045| :::                              |  0.043| S3Part&lt;-                     |  0.030| -4.44%  | -33.33% |
+| 40  |              12| signifNum                  |  0.025| gl                               |  0.054| paged\_table\_type\_sum         |  0.049| 116.00% | 96.00%  |
+| 41  |              10| is.namedlistnotdf          |  0.033| machine                          |  0.044| table2matrix                    |  0.037| 33.33%  | 12.12%  |
+| 42  |              10| xml\_find\_all             |  0.027| tolower                          |  0.052| CRAN\_baseurl\_for\_src\_area   |  0.055| 92.59%  | 103.70% |
+| 43  |              10| xml\_ns.xml\_document      |  0.036| blues9                           |  0.043| useHash                         |  0.032| 19.44%  | -11.11% |
+| 44  |              10| lift\_ld                   |  0.021| .DollarNames.default             |  0.058| %||%                            |  0.026| 176.19% | 23.81%  |
+| 45  |              10| circadian.phase            |  0.028| is.stepfun                       |  0.050| grid.rect                       |  0.033| 78.57%  | 17.86%  |
+| 46  |              12| signifNum                  |  0.022| gl                               |  0.056| paged\_table\_type\_sum         |  0.053| 154.55% | 140.91% |
+| 47  |              11| as.hms.numeric             |  0.033| textConnectionValue              |  0.068| .\_\_T\_\_sqlParseVariables:DBI |  0.070| 106.06% | 112.12% |
+| 48  |              10| GeomLine                   |  0.026| xtfrm.POSIXlt                    |  0.063| DUMMY                           |  0.031| 142.31% | 19.23%  |
+| 49  |              11| dmicroseconds              |  0.028| setRepositories                  |  0.063| Variogram                       |  0.033| 125.00% | 17.86%  |
+| 50  |              11| .duration\_from\_num       |  0.040| .Group                           |  0.050| stri\_read\_raw                 |  0.040| 25.00%  | 0.00%   |
+
+Performance between current `HSIZE` and larger `HSIZE`.
+=======================================================
+
+<inst/script.R> has a simple benchmark, to compare between the current value and a larger one. The benchmark looks up every symbol in the hash a certain number of times (10,000 in this example).
+
+``` shell
+R --version
+# R Under development (unstable) (2017-05-16 r72682) -- "Unsuffered Consequences"
+
+# Current HSIZE (4119)
+Rscript inst/script.R 4119 $((10**4))
+# [1] 15959
+#    user  system elapsed
+#   5.245   0.005   5.252
+
+# HSIZE of 2^16 (65536)
+Rscript inst/script.R $((2**16)) $((10**4))
+# [1] 16093
+#    user  system elapsed
+#   4.280   0.007   4.288
+```
